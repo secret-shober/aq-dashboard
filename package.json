@@ -7,6 +7,7 @@
     "build": "next build",
     "start:local": "next start",
     "start": "next start -H 0.0.0.0",
+    "export": "next export",
     "lint": "next lint",
     "server": "ts-node server/scrape.ts --project=server/tsconfig.json"
   },
