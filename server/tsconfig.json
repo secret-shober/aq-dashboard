@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "lib": ["es2021", "dom"],
+      "target": "ESNext",
+      "allowJs": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "noEmit": true,
+      "esModuleInterop": true,
+      "module": "CommonJS",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": false,
+      "jsx": "preserve",
+      "incremental": true
+    },
+    "exclude": ["node_modules"]
+  }
+  
