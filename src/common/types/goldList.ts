@@ -15,7 +15,7 @@ export interface GoldList {
 export interface GoldListRecord {
     id: number;
     vaults: VaultInformation[];
-    date: Date;
+    date: string;
 }
 
 export interface PlayerDetails {

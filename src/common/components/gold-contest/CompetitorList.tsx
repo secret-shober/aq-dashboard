@@ -19,7 +19,7 @@ import useDebounce from "../../../common/hooks/useDebounce";
 interface CompetitorListProps {
   players: PlayerInformation[];
   handleNameClick: (id: number) => void;
-  updatedDate?: Date;
+  updatedDate?: string;
 }
 
 const TableContainer = styled("div")`

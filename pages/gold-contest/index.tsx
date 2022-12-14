@@ -77,15 +77,22 @@ export const getStaticProps = async (): Promise<{
       "Content-Type": "application/json",
     },
   });
-  const response: GoldListRecord = await request.json();
+
+  let response: GoldListRecord;
+
+  try {
+    response = await request.json();
+  } catch {
+    response = {
+      id: 1,
+      vaults: [],
+      date: new Date().toUTCString(),
+    };
+  }
 
   return {
     props: {
-      data: response ?? {
-        id: 1,
-        vaults: [],
-        date: new Date(),
-      },
+      data: response,
     },
   };
 };

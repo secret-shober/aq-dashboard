@@ -127,7 +127,7 @@ const updateGoldList = async () => {
                 $set: {
                     id: 1,
                     vaults: Array.from(processedVaults.values()),
-                    date: new Date()
+                    date: new Date().toUTCString()
                 } as GoldListRecord
             },
             { upsert: true }
