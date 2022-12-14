@@ -12,13 +12,16 @@ import {
   Typography,
 } from "@mui/material";
 import styled from "@emotion/styled";
-import {
+
+import type {
   PlayerItemsOfInterest,
   VaultInformation,
+} from "../../types/goldList";
+import {
   itemsOfInterest,
   getCharacterPageUrl,
   calculateTotalFromItems,
-} from "../../../server/goldList/";
+} from "../../utils/goldList";
 
 const ModalContainer = styled(Box)`
   position: absolute;

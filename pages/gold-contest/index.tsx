@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
 
-import { GoldListRecord, PlayerInformation } from "../../server/goldList/types";
-import CompetitorBreakdown from "../../src/components/gold-contest/CompetitorBreakdown";
-import CompetitorList from "../../src/components/gold-contest/CompetitorList";
+import type {
+  GoldListRecord,
+  PlayerInformation,
+} from "../../src/common/types/goldList";
+import CompetitorBreakdown from "../../src/common/components/gold-contest/CompetitorBreakdown";
+import CompetitorList from "../../src/common/components/gold-contest/CompetitorList";
 
 const GoldContest: React.FC<{ data: GoldListRecord }> = ({
   data,
@@ -78,7 +81,11 @@ export const getStaticProps = async (): Promise<{
 
   return {
     props: {
-      data: response,
+      data: response ?? {
+        id: 1,
+        vaults: [],
+        date: new Date(),
+      },
     },
   };
 };

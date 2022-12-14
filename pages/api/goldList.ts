@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getClient } from '../../server/client';
-import { GoldListRecord } from '../../server/goldList/types';
+import { getClient } from '../../src/server/client';
+import type { GoldListRecord } from "../../src/common/types/goldList";
 
 export default async function handler(
   req: NextApiRequest,

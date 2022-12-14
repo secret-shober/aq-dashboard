@@ -8,12 +8,15 @@ import {
     getEligiblePlayers,
     getPlayerInformation,
     processVaultInformation,
+    sortPlayersById,
+} from "../../common/utils/goldList";
+
+import type {
     PastPlayerIdsQuery,
     PlayerInformation,
     VaultInformation,
     GoldListRecord,
-    sortPlayersById,
-} from ".";
+} from '../../common/types/goldList';
 
 dotenv.config();
 

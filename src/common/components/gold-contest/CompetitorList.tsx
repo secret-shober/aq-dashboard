@@ -13,8 +13,8 @@ import {
   Checkbox,
 } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { PlayerInformation } from "../../../server/goldList";
-import useDebounce from "../../hooks/useDebounce";
+import type { PlayerInformation } from "../../types/goldList";
+import useDebounce from "../../../common/hooks/useDebounce";
 
 interface CompetitorListProps {
   players: PlayerInformation[];
@@ -135,7 +135,7 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
       <StyledTable stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell />
+            <TableCell colSpan={1} />
             <TableCell>Rank</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Total Estimated Gold</TableCell>
@@ -148,7 +148,7 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
             .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
             .map((player, index) => (
               <TableRow key={player.id}>
-                <TableCell>
+                <TableCell colSpan={1}>
                   <Checkbox
                     onChange={() => handlePlayerToExclude(player)}
                     checked={isPlayerChecked(player)}
@@ -176,12 +176,13 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
           <TableRow>
             <TableCell>
               <TextField
+                fullWidth
                 placeholder="Search for a name or an ID..."
                 value={searchString}
                 onChange={(evt) => setSearchString(evt.target.value.toString())}
               />
             </TableCell>
-            <TableCell>
+            <TableCell colSpan={2}>
               <Button
                 onClick={handleExcludePlayers}
                 variant="contained"

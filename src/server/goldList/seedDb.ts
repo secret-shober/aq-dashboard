@@ -4,11 +4,11 @@ import path from 'path';
 import { getClient } from '../client';
 
 export const gatherPastParticipantIds = async (): Promise<number[]> => {
-    const fileNames = await readdir(path.join(__dirname, '..', '..', 'sources'));
+    const fileNames = await readdir(path.join(__dirname, 'sources'));
     let ids: number[] = [];
 
     const requests = fileNames.map(fileName =>
-        readFile(path.join(__dirname, '..', '..', 'sources', fileName), 'utf-8')
+        readFile(path.join(__dirname, '..', 'sources', fileName), 'utf-8')
     );
 
     const responses = await Promise.all(requests);
