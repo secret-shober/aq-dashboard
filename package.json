@@ -10,8 +10,8 @@
     "export": "next export",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "goldList": "ts-node server/goldList/updateGoldList.ts --project=server/tsconfig.json",
-    "seedDB": "ts-node server/goldList/seedDb.ts --project=server/tsconfig.json"
+    "goldList": "ts-node src/server/goldList/updateGoldList.ts --project=src/server/tsconfig.json",
+    "seedDB": "ts-node src/server/goldList/seedDb.ts --project=src/server/tsconfig.json"
   },
   "dependencies": {
     "@emotion/css": "^11.10.5",
