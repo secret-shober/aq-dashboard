@@ -141,7 +141,7 @@ export const getPlayerInformation = async (
 export const getPrimaryAccount = (
     competitors: Competitor[],
     associatedPlayers: PlayerInformation[]
-): number | undefined => {
+): number => {
     if (associatedPlayers.length === 1) {
         return associatedPlayers[0].id;
     }
@@ -215,7 +215,7 @@ export const processVaultInformation = async (
 
     return {
         ...vault,
-        primaryAccountId: vault.primaryAccountId!,
+        primaryAccountId,
         vaultItems,
     };
 };

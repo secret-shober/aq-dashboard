@@ -36,6 +36,8 @@ const GoldContest: React.FC<{ data: GoldListRecord }> = ({
     [selectedId, data.vaults]
   );
 
+  console.log("the data", data);
+
   const handleNameClick = (id: number) => {
     setModalOpen(true);
     setSelectedId(id);
