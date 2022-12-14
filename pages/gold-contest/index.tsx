@@ -69,7 +69,7 @@ export const getStaticProps = async (): Promise<{
 }> => {
   const url =
     process.env.NODE_ENV === "production"
-      ? "https://aq-dashboard.onrender.com/"
+      ? "https://aq-dashboard.netlify.app"
       : "http://localhost:3000";
 
   const request = await fetch(`${url}/api/goldList`, {
