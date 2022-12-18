@@ -11,5 +11,6 @@ export default async function handler(
   const result = await collection
     .findOne<GoldListRecord>({ id: 1 });
 
+  await client.close();
   res.status(200).json(result);
 }
