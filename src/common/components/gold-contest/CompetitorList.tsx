@@ -57,23 +57,24 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
   const [searchString, setSearchString] = useState<string>("");
   const { debounced, setImmediateValue } = useDebounce(searchString, 500);
 
-  const filteredPlayers: PlayerInformation[] = useMemo(() => {
-    if (debounced.length === 0) {
-      return players;
-    } else {
-      return players
-        .filter(
-          (player) =>
-            !excludedPlayers.some((excluded) => excluded.id === player.id)
-        )
-        .filter((player) => {
-          return (
-            player.id.toString() === debounced ||
-            player.name.toLowerCase().includes(debounced.toLowerCase())
-          );
-        });
-    }
-  }, [debounced, players, excludedPlayers]);
+  const filteredPlayers: PlayerInformation[] = useMemo(
+    () =>
+      players.filter(
+        (player) =>
+          !excludedPlayers.some((excluded) => excluded.id === player.id)
+      ),
+    [players, excludedPlayers]
+  );
+
+  const searchFiltered: PlayerInformation[] = useMemo(
+    () =>
+      filteredPlayers.filter(
+        (player) =>
+          player.id.toString() === debounced ||
+          player.name.toLowerCase().includes(debounced.toLowerCase())
+      ),
+    [debounced, filteredPlayers]
+  );
 
   useEffect(() => {
     setPage(0);
@@ -112,7 +113,8 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
   };
 
   const handleExcludePlayers = () => {
-    setExcludedPlayers([...excludedPlayers, ...playersToExclude]);
+    const excluding = [...excludedPlayers, ...playersToExclude];
+    setExcludedPlayers(excluding);
     setPlayersToExclude([]);
   };
 
@@ -135,20 +137,20 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
       <StyledTable stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell colSpan={1} />
+            <TableCell sx={{ width: 75 }} />
             <TableCell>Rank</TableCell>
-            <TableCell>Name</TableCell>
+            <TableCell colSpan={2}>Name</TableCell>
             <TableCell>Total Estimated Gold</TableCell>
             <TableCell>Current Gold</TableCell>
             <TableCell>Daily Gold</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredPlayers
+          {searchFiltered
             .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
             .map((player, index) => (
               <TableRow key={player.id}>
-                <TableCell colSpan={1}>
+                <TableCell sx={{ width: 75 }}>
                   <Checkbox
                     onChange={() => handlePlayerToExclude(player)}
                     checked={isPlayerChecked(player)}
@@ -156,11 +158,17 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
                 </TableCell>
                 <TableCell>
                   {debounced
-                    ? 1 + players.findIndex((x) => x.id === player.id)
+                    ? 1 + filteredPlayers.findIndex((x) => x.id === player.id)
                     : page * rowsPerPage + index + 1}
                 </TableCell>
-                <TableCell>
-                  <Button onClick={() => handleNameClick(player.id)}>
+                <TableCell colSpan={2} sx={{ paddingLeft: 1 }}>
+                  <Button
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                    }}
+                    onClick={() => handleNameClick(player.id)}
+                  >
                     {player.name}
                   </Button>
                 </TableCell>
@@ -173,52 +181,48 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
             ))}
         </TableBody>
         <TableOptions>
-          <TableRow>
-            <TableCell>
-              <TextField
-                fullWidth
-                placeholder="Search for a name or an ID..."
-                value={searchString}
-                onChange={(evt) => setSearchString(evt.target.value.toString())}
-              />
-            </TableCell>
-            <TableCell colSpan={2}>
-              <Button
-                onClick={handleExcludePlayers}
-                variant="contained"
-                disabled={playersToExclude.length === 0}
-                color="error"
-              >
-                Filter Players
-                {playersToExclude.length
-                  ? `: (${playersToExclude.length})`
-                  : ""}
-              </Button>
-              <Button
-                disabled={playersToExclude.length !== 0}
-                onClick={handleReset}
-              >
-                Reset
-              </Button>
-            </TableCell>
-            <TablePagination
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={(evt) =>
-                setRowsPerPage(Number(evt.target.value))
-              }
-              onPageChange={(evt, page) => setPage(page)}
-              rowsPerPageOptions={[
-                5,
-                10,
-                25,
-                50,
-                100,
-                { label: "All", value: -1 },
-              ]}
-              count={filteredPlayers.length}
+          <TableCell colSpan={3} sx={{ borderTop: "1px solid #eoeoeo" }}>
+            <TextField
+              fullWidth
+              placeholder="Search for a name or an ID..."
+              value={searchString}
+              onChange={(evt) => setSearchString(evt.target.value.toString())}
             />
-          </TableRow>
+          </TableCell>
+          <TableCell colSpan={2}>
+            <Button
+              onClick={handleExcludePlayers}
+              variant="contained"
+              disabled={playersToExclude.length === 0}
+              color="error"
+            >
+              Filter Players
+              {playersToExclude.length ? `: (${playersToExclude.length})` : ""}
+            </Button>
+            <Button
+              disabled={playersToExclude.length !== 0}
+              onClick={handleReset}
+            >
+              Reset
+            </Button>
+          </TableCell>
+          <TablePagination
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(evt) =>
+              setRowsPerPage(Number(evt.target.value))
+            }
+            onPageChange={(evt, page) => setPage(page)}
+            rowsPerPageOptions={[
+              5,
+              10,
+              25,
+              50,
+              100,
+              { label: "All", value: -1 },
+            ]}
+            count={filteredPlayers.length}
+          />
         </TableOptions>
       </StyledTable>
     </TableContainer>

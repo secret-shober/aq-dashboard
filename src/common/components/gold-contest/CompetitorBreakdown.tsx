@@ -58,6 +58,16 @@ const ItemBreakdownTable = styled(TableRow)`
   }
 `;
 
+const BasicInformationContainer = styled(Box)`
+  margin-top: 8px;
+  margin-bottom: 8px;
+`;
+
+const BasicInformationItem = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+`;
+
 interface CompetitorBreakdownProps {
   open: boolean;
   onClose: () => void;
@@ -80,6 +90,31 @@ const CompetitorBreakdown: React.FC<CompetitorBreakdownProps> = ({
     () => vault?.associatedPlayers?.filter((x) => x.id !== selectedId),
     [selectedId, vault]
   );
+
+  const renderBasicInformation = () => {
+    return (
+      <BasicInformationContainer sx={{ marginTop: "8px" }}>
+        <BasicInformationItem>
+          <Typography>Total Estimated Gold: </Typography>
+          <Typography>
+            {primaryPlayer?.totalEstimatedGold?.toLocaleString()}
+          </Typography>
+        </BasicInformationItem>
+
+        <BasicInformationItem>
+          <Typography>Current Donated Gold: </Typography>
+          <Typography>
+            {primaryPlayer?.goldDonated?.toLocaleString()}
+          </Typography>
+        </BasicInformationItem>
+
+        <BasicInformationItem>
+          <Typography>Current Gold: </Typography>
+          <Typography>{primaryPlayer?.gold?.toLocaleString()}</Typography>
+        </BasicInformationItem>
+      </BasicInformationContainer>
+    );
+  };
 
   const renderItemBreakdown = (items: PlayerItemsOfInterest) => {
     return (
@@ -134,13 +169,8 @@ const CompetitorBreakdown: React.FC<CompetitorBreakdownProps> = ({
           <Button onClick={onClose}>Close</Button>
         </ModalHeader>
         <Divider />
-        <TotalEstimatedGold>
-          Total Estimated Gold:{" "}
-          {primaryPlayer?.totalEstimatedGold?.toLocaleString()}
-        </TotalEstimatedGold>
-        <Typography component="h2" variant="h6">
-          Primary Character Breakdown:
-        </Typography>
+
+        {renderBasicInformation()}
 
         {primaryPlayer?.items && renderItemBreakdown(primaryPlayer.items)}
 

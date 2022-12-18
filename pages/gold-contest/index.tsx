@@ -6,10 +6,11 @@ import type {
 } from "../../src/common/types/goldList";
 import CompetitorBreakdown from "../../src/common/components/gold-contest/CompetitorBreakdown";
 import CompetitorList from "../../src/common/components/gold-contest/CompetitorList";
+import { useGoldList } from "../../src/common/hooks/useGoldList";
 
-const GoldContest: React.FC<{ data: GoldListRecord }> = ({
-  data,
-}): JSX.Element => {
+const GoldContest: React.FC = (): JSX.Element => {
+  const { data } = useGoldList();
+
   const playersList = useMemo(() => {
     let results: PlayerInformation[] = [];
 
@@ -33,7 +34,7 @@ const GoldContest: React.FC<{ data: GoldListRecord }> = ({
 
   const selectedVault = useMemo(
     () => data?.vaults?.find((vault) => vault.primaryAccountId === selectedId),
-    [selectedId, data.vaults]
+    [selectedId, data?.vaults]
   );
 
   const handleNameClick = (id: number) => {
@@ -49,9 +50,9 @@ const GoldContest: React.FC<{ data: GoldListRecord }> = ({
       <CompetitorList
         players={playersList}
         handleNameClick={handleNameClick}
-        updatedDate={data.date}
+        updatedDate={data?.date}
       />
-      {data.vaults.length && (
+      {data?.vaults.length && (
         <CompetitorBreakdown
           open={modalOpen}
           onClose={() => setModalOpen(false)}
@@ -63,36 +64,3 @@ const GoldContest: React.FC<{ data: GoldListRecord }> = ({
   );
 };
 export default GoldContest;
-
-export const getStaticProps = async (): Promise<{
-  props: { data: GoldListRecord };
-}> => {
-  const url =
-    process.env.NODE_ENV === "production"
-      ? "https://aq-dashboard.netlify.app"
-      : "http://localhost:3000";
-
-  const request = await fetch(`${url}/api/goldList`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  let response: GoldListRecord;
-
-  try {
-    response = await request.json();
-  } catch {
-    response = {
-      id: 1,
-      vaults: [],
-      date: new Date().toUTCString(),
-    };
-  }
-
-  return {
-    props: {
-      data: response,
-    },
-  };
-};
