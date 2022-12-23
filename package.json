@@ -11,6 +11,8 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "goldList": "ts-node src/server/goldList/updateGoldList.ts --project=src/server/tsconfig.json",
+    "goldPrediction": "ts-node src/server/goldPrediction/updateGoldPredictions.ts --project=src/server/tsconfig.json",
+    "warZone": "ts-node src/server/warZone/updateWarZoneId.ts --project=src/server/tsconfig.json",
     "seedDB": "ts-node src/server/goldList/seedDb.ts --project=src/server/tsconfig.json"
   },
   "dependencies": {
@@ -26,6 +28,7 @@
     "@types/nodemon": "^1.19.2",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",
+    "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
     "eslint": "8.28.0",
     "eslint-config-next": "13.0.5",

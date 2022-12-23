@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { GoldList, GoldListRecord } from "../types/goldList";
+import { GoldListRecord } from "../types/goldList";
 
 export const useGoldList = () => {
     const result = useSWR<GoldListRecord>("/api/goldList", (input: RequestInfo) =>

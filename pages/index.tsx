@@ -15,7 +15,12 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>AQ Dashboard</h1>
         <div className={styles.projectLinks}>
+          <Link href="https://github.com/secret-shober/aq-dashboard">
+            Source Code
+          </Link>
           <Link href="/gold-contest">Gold Contest</Link>
+          <Link href="/gold-prediction">Gold Contest Prediction</Link>
+          <Link href="/war-zone">War Zone</Link>
         </div>
       </main>
       <footer className={styles.footer}>

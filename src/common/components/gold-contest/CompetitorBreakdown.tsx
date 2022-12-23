@@ -177,7 +177,11 @@ const CompetitorBreakdown: React.FC<CompetitorBreakdownProps> = ({
         {vault?.vaultItems && (
           <React.Fragment>
             <Typography component="h2" variant="h6">
-              <a href={getCharacterPageUrl(vault.vaultId!)}>
+              <a
+                href={getCharacterPageUrl(vault.vaultId!)}
+                target="_blank"
+                rel="noreferrer"
+              >
                 Vault Items Breakdown:
               </a>
             </Typography>
