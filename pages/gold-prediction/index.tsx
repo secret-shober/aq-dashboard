@@ -1,5 +1,7 @@
+import ContestPotGraph from "../../src/common/components/gold-prediction/ContestPotGraph";
+
 const GoldPrediction: React.FC = (): JSX.Element => {
-  return <div>Hello World</div>;
+  return <ContestPotGraph />;
 };
 
 export default GoldPrediction;

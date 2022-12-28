@@ -12,6 +12,11 @@ export interface GoldList {
     desc: string,
 }
 
+export interface OldGoldList {
+    data: Competitor[];
+    total: string;
+}
+
 export interface GoldListRecord {
     id: number;
     vaults: VaultInformation[];

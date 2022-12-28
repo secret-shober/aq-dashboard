@@ -27,6 +27,7 @@ const WarMeterText = styled("div")`
   margin-right: auto;
   text-align: center;
   z-index: 1;
+  color: purple;
 `;
 
 const WarMeter = styled(LinearProgress)`
@@ -72,7 +73,7 @@ const WarProgress = () => {
       <Typography>War Progress:</Typography>
       <WarMeterContainer>
         <WarMeterText>
-          {progressText} Waves Defeated ({formattedWarPercentage})%
+          {progressText} Waves Defeated ({formattedWarPercentage}%)
         </WarMeterText>
       </WarMeterContainer>
       <WarMeter
