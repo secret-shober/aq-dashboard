@@ -1,18 +1,20 @@
-import { addDays, format } from 'date-fns';
+import { format } from 'date-fns';
 import { ContestPotEntry, GoldListWithDate, RankedRegressionEntry } from '../../common/types/goldPrediction';
-import { filterTimestamp, getAllSnapshots, getAllValidContestDays, getContestSeasonFromTimestamp, getDaysFromSeasonStart, parseDateFromTimestamp, processGoldListUrl, wait } from '../../common/utils/goldPrediction';
+import { filterTimestamp, getAllSnapshotTimestamps, getContestSeasonFromTimestamp, getDaysFromSeasonStart, parseDateFromTimestamp, processGoldListUrl, wait } from '../../common/utils/goldPrediction';
 import { getClient } from '../client';
 
 const updateGoldPredictions = async () => {
     console.log('Getting all available snapshots...');
-    const startingDate = format(new Date(2021, 10, 30, 0, 0, 0), 'yyyyMMddhhmmss');
-    const urls = await getAllSnapshots([], startingDate, addDays(new Date(), 2));
+    const timestamps = await getAllSnapshotTimestamps();
+
+    const filteredStamps = timestamps.filter(filterTimestamp);
+
     console.log('Got all the snapshots!');
 
     const addedDates: { [timestamp: string]: string } = {};
 
-    urls.forEach(url => {
-        addedDates[url.slice(0, 8)] = url;
+    filteredStamps.forEach(stamp => {
+        addedDates[stamp.slice(0, 8)] = stamp;
     });
 
     const uniqueTimestamps = Array.from(Object.values(addedDates))

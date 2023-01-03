@@ -2,72 +2,35 @@ import { format, addDays, differenceInDays, isSameDay, isAfter } from 'date-fns'
 import { GoldList, OldGoldList } from '../types/goldList';
 import { MementoQueryResult } from '../types/goldPrediction';
 
-export const getAllSnapshots = async (timestamps: string[], timestamp: string, stopDate: Date): Promise<string[]> => {
-    const parsedDate = parseDateFromTimestamp(timestamp);
-    if (isSameDay(parsedDate, stopDate) || isAfter(parsedDate, stopDate)) {
-        return timestamps;
-    }
-    else {
-        let request;
-        let response;
-        const url = `http://timetravel.mementoweb.org/api/json/${timestamp}/http://battleon.com/topelfgold`;
-        request = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
-        try {
-            response = await request.json() as MementoQueryResult;
-            if (response.mementos.next) {
-                const newUrl = response.mementos.next.uri[0];
-                const nextTimestamp = newUrl.match(/\d+/g);
-
-                if (nextTimestamp) {
-                    console.log('adding timestamp', parseDateFromTimestamp(nextTimestamp[0]).toLocaleString());
-                    return getAllSnapshots([...timestamps, nextTimestamp[0]], nextTimestamp[0], stopDate);
-                }
-                else {
-                    return timestamps;
-                }
-            }
-        }
-        catch (e) {
-            console.log('the error', e);
-            return timestamps;
-        }
-
-        return timestamps;
-    }
-};
-
-export const getAllValidContestDays = (): Date[] => {
-    const currentDate = new Date();
-
-    // This is Dec 1st 2021
-    let startDate = new Date(2021, 11, 1, 0, 0, 0);
-
-    const validDates: Date[] = [];
-
-    while (startDate <= currentDate) {
-        const result = filterTimestamp(format(currentDate, 'yyyyMMddhhmmss'));
-        if (result) {
-            validDates.push(startDate);
-        }
-        startDate = addDays(startDate, 1);
-    }
-
-    return validDates;
+export const getAllSnapshotTimestamps = async (): Promise<string[]> => {
+    const url = 'https://web.archive.org/cdx/search/cdx?url=https://battleon.com/topelfgold';
+    const request = await fetch(url);
+    const response = await request.text();
+    return response.split('\n')
+        .filter(line => line.length)
+        .map(line => line.split(' ')[1]);
 };
 
 export const filterTimestamp = (timestamp: string): boolean => {
-    const parsedDate = parseDateFromTimestamp(timestamp);
-    switch (parsedDate.getMonth()) {
-        case 0:
-        case 11:
-            return true;
-        case 1:
-            if (parsedDate.getDate() < 3) {
+    try {
+        const parsedDate = parseDateFromTimestamp(timestamp);
+        switch (parsedDate.getMonth()) {
+            case 0:
+            case 11:
                 return true;
-            }
-            return false;
-        default:
-            return false;
+            case 1:
+                if (parsedDate.getDate() < 3) {
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+    }
+    catch (e) {
+        console.log('error timestamp', timestamp);
+        console.log('the error', e);
+        throw new Error();
     }
 };
 
