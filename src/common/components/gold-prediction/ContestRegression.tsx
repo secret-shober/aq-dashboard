@@ -30,27 +30,6 @@ const OptionsContainer = styled(Box)`
   }
 `;
 
-const CustomNumberFormat = (props) => {
-  const { inputRef, onChange, ...other } = props;
-
-  return (
-    <NumericFormat
-      allowNegative={false}
-      allowedDecimalSeparators={false}
-      thousandSeparator=","
-      getInputRef={inputRef}
-      onValueChange={(values) =>
-        onChange({
-          target: {
-            value: values.value,
-          },
-        })
-      }
-      {...other}
-    />
-  );
-};
-
 const ContestRegression = () => {
   const { isLoading, data } = useGoldRegression();
   const [selectedSeason, setSelectedSeason] = useState<number>(2021);
