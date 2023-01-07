@@ -37,7 +37,7 @@ const updateGoldPredictions = async () => {
     // This is maximum level badness that I should never actually do but wayback machine is a piece of garbage
     // And won't let me process more than 10 requests at a time.
     // TODO: FIND A BETTER WAY TO DO THIS!!!
-    const MAX_URLS_PER_BATCH = 10;
+    const MAX_URLS_PER_BATCH = 5;
     const steps = Math.ceil(snapshotUrls.length / MAX_URLS_PER_BATCH);
 
     const slices: any[] = [];
