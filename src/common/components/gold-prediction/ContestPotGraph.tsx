@@ -89,7 +89,7 @@ const ContestPotGraph = () => {
       });
 
       const predictionEntries: number[][] = [];
-      for (let day = 1; day < 62; day++) {
+      for (let day = 0; day < 63; day++) {
         predictionEntries.push([day, currentSeason]);
       }
 
