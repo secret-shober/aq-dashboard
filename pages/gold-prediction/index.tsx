@@ -6,7 +6,7 @@ const GoldPrediction: React.FC = (): JSX.Element => {
   return (
     <React.Fragment>
       <ContestPotGraph />
-      <ContestRegression />
+      {/* <ContestRegression /> */}
     </React.Fragment>
   );
 };
