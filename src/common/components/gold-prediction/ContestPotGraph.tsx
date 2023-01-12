@@ -13,6 +13,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import * as tf from "@tensorflow/tfjs";
 import { ContestPotEntry } from "../../types/goldPrediction";
 
+const FIRST_SEASON = 2021;
+
 const ContestPotGraph = () => {
   const { data, isLoading } = useContestPotEntries();
   const [predictedValues, setPredictedValues] = useState<ContestPotEntry[]>([]);
@@ -24,12 +26,30 @@ const ContestPotGraph = () => {
 
   const currentSeason = useMemo(() => seasons[seasons.length - 1], [seasons]);
 
+  const convertDataToTensor = (data: any, shape: [number, number]) => {
+    return tf.tidy(() => {
+      const inputTensor = tf.tensor2d(data, shape);
+      const inputMax = inputTensor.max();
+      const inputMin = inputTensor.min();
+
+      const normalizedTensor = inputTensor
+        .sub(inputMin)
+        .div(inputMax.sub(inputMin));
+
+      return {
+        tensor: normalizedTensor,
+        tensorMin: inputMin,
+        tensorMax: inputMax,
+      };
+    });
+  };
+
   const getPredictedEntries = useCallback(async () => {
     if (data && currentSeason) {
       // our inputs will be day and season, our output, total Contest Gold.
       const trainingEntriesToUse = data.map((entry) => [
         entry.day,
-        entry.season,
+        entry.season - FIRST_SEASON,
         entry.totalContestGold,
       ]);
 
@@ -38,40 +58,32 @@ const ContestPotGraph = () => {
       const model = tf.sequential();
       model.add(
         tf.layers.dense({
-          inputShape: [2],
           activation: "linear",
+          inputShape: [2],
           units: 1,
-          useBias: true,
         })
       );
 
-      model.add(
-        tf.layers.dense({
-          units: 1,
-          useBias: true,
-        })
-      );
+      // model.add(
+      //   tf.layers.dense({
+      //     units: 1,
+      //   })
+      // );
 
       const trainingXs = trainingEntriesToUse.map((entry) => entry.slice(0, 2));
       const trainingYs = trainingEntriesToUse.map(
         (entry) => entry[entry.length - 1]
       );
 
-      const inputTensor = tf.tensor2d(trainingXs);
-      const labelTensor = tf.tensor(trainingYs);
+      const trainingInputData = convertDataToTensor(trainingXs, [
+        trainingXs.length,
+        2,
+      ]);
 
-      const inputMax = inputTensor.max();
-      const inputMin = inputTensor.min();
-      const labelMax = labelTensor.max();
-      const labelMin = labelTensor.min();
-
-      const normalizedTrainingInputs = inputTensor
-        .sub(inputMin)
-        .div(inputMax.sub(inputMin));
-
-      const normalizedTrainingLabels = labelTensor
-        .sub(labelMin)
-        .div(labelMax.sub(labelMin));
+      const trainingOutputData = convertDataToTensor(trainingYs, [
+        trainingYs.length,
+        1,
+      ]);
 
       model.compile({
         optimizer: tf.train.adam(),
@@ -80,9 +92,9 @@ const ContestPotGraph = () => {
       });
 
       const batchSize = 32;
-      const epochs = 50;
+      const epochs = 200;
 
-      await model.fit(normalizedTrainingInputs, normalizedTrainingLabels, {
+      await model.fit(trainingInputData.tensor, trainingOutputData.tensor, {
         batchSize,
         epochs,
         shuffle: true,
@@ -90,30 +102,24 @@ const ContestPotGraph = () => {
 
       const predictionEntries: number[][] = [];
       for (let day = 0; day < 63; day++) {
-        predictionEntries.push([day, currentSeason]);
+        predictionEntries.push([day, currentSeason - FIRST_SEASON]);
       }
 
       const [xSync, ySync] = tf.tidy(() => {
-        const predictionTensor = tf.tensor2d(predictionEntries, [
+        const predictionTensor = convertDataToTensor(predictionEntries, [
           predictionEntries.length,
           2,
         ]);
 
-        const predictionTensorMin = predictionTensor.min();
-        const predictionTensorMax = predictionTensor.max();
-        const normalizedPredictionEntries = predictionTensor
-          .sub(predictionTensorMin)
-          .div(predictionTensorMax.sub(predictionTensorMin));
+        const predictions = model.predict(predictionTensor.tensor);
 
-        const predictions = model.predict(normalizedPredictionEntries);
-
-        const unNormXs = normalizedPredictionEntries
-          .mul(inputMax.sub(inputMin))
-          .add(inputMin);
+        const unNormXs = predictionTensor.tensor
+          .mul(trainingInputData.tensorMax.sub(trainingInputData.tensorMin))
+          .add(trainingInputData.tensorMin);
 
         const unNormPreds = (predictions as tf.Tensor)
-          .mul(labelMax.sub(labelMin))
-          .add(labelMin);
+          .mul(trainingOutputData.tensorMax.sub(trainingOutputData.tensorMin))
+          .add(trainingOutputData.tensorMin);
 
         const xSync = Array.from(unNormXs.dataSync());
         const ySync: number[] = Array.from(unNormPreds.dataSync());
@@ -184,7 +190,7 @@ const ContestPotGraph = () => {
           dataKey="totalContestGold"
           name={`Season ${currentSeason} Prediction`}
           data={predictedValues}
-          stroke={randomColor()}
+          stroke={"black"}
         />
       )}
     </LineChart>

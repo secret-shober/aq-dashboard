@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import NavLinks from "../src/common/components/nav-links/NavLinks";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
@@ -14,14 +15,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>AQ Dashboard</h1>
-        <div className={styles.projectLinks}>
-          <Link href="https://github.com/secret-shober/aq-dashboard">
-            Source Code
-          </Link>
-          <Link href="/gold-contest">Gold Contest</Link>
-          <Link href="/gold-prediction">Gold Contest Prediction</Link>
-          <Link href="/war-zone">War Zone</Link>
-        </div>
+        <NavLinks />
       </main>
       <footer className={styles.footer}>
         <a

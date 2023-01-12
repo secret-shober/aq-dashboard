@@ -41,6 +41,22 @@ const TableOptions = styled(TableFooter)`
   background-color: white;
 `;
 
+const SortableHeader = styled(TableCell)`
+  cursor: pointer;
+
+  &:hover {
+    background-color: #eee;
+  }
+`;
+
+enum SORT_CATEGORIES {
+  TOTAL_ESTIMATED_GOLD = 1,
+  GOLD_LEFT = 2,
+  GOLD_DONATED = 3,
+  DAILY_GOLD = 4,
+  GOLD = 5,
+}
+
 const CompetitorList: React.FC<CompetitorListProps> = ({
   players,
   handleNameClick,
@@ -56,6 +72,7 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
   );
   const [searchString, setSearchString] = useState<string>("");
   const { debounced, setImmediateValue } = useDebounce(searchString, 500);
+  const [selectedColumn, setSelectedColumn] = useState(1);
 
   const filteredPlayers: PlayerInformation[] = useMemo(
     () =>
@@ -66,19 +83,40 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
     [players, excludedPlayers]
   );
 
-  const searchFiltered: PlayerInformation[] = useMemo(
-    () =>
-      filteredPlayers.filter(
-        (player) =>
-          player.id.toString() === debounced ||
-          player.name.toLowerCase().includes(debounced.toLowerCase())
-      ),
-    [debounced, filteredPlayers]
-  );
+  const sortData = (
+    a: PlayerInformation,
+    b: PlayerInformation,
+    predicate: Function
+  ): number => {
+    if (predicate(a) > predicate(b)) {
+      return -1;
+    } else if (predicate(a) > predicate(b)) {
+      return 1;
+    }
+    return 0;
+  };
 
-  useEffect(() => {
-    setPage(0);
-  }, [debounced, filteredPlayers, players]);
+  const getSortPredicate = (selectedColumn: number): Function => {
+    switch (selectedColumn) {
+      case SORT_CATEGORIES.TOTAL_ESTIMATED_GOLD: {
+        return (player: PlayerInformation) => player.totalEstimatedGold;
+      }
+      case SORT_CATEGORIES.GOLD_LEFT: {
+        return (player: PlayerInformation) =>
+          player.totalEstimatedGold! - player.goldDonated;
+      }
+      case SORT_CATEGORIES.GOLD_DONATED: {
+        return (player: PlayerInformation) => player.goldDonated;
+      }
+      case SORT_CATEGORIES.DAILY_GOLD: {
+        return (player: PlayerInformation) => player.dailyGold;
+      }
+      default:
+      case SORT_CATEGORIES.GOLD: {
+        return (player: PlayerInformation) => player.gold;
+      }
+    }
+  };
 
   const isPlayerChecked = useCallback(
     (player: PlayerInformation) =>
@@ -118,6 +156,22 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
     setPlayersToExclude([]);
   };
 
+  const searchFiltered: PlayerInformation[] = useMemo(
+    () =>
+      filteredPlayers
+        .filter(
+          (player) =>
+            player.id.toString() === debounced ||
+            player.name.toLowerCase().includes(debounced.toLowerCase())
+        )
+        .sort((a, b) => sortData(a, b, getSortPredicate(selectedColumn))),
+    [debounced, filteredPlayers, selectedColumn]
+  );
+
+  useEffect(() => {
+    setPage(0);
+  }, [debounced, filteredPlayers, players]);
+
   return (
     <TableContainer>
       <Typography variant="h6" component="h2">
@@ -130,7 +184,7 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
           .toLocaleString()}
       </Typography>
       {updatedDate && (
-        <Typography>
+        <Typography style={{ marginBottom: "24px" }}>
           Last Updated at: {new Date(updatedDate).toLocaleString()}
         </Typography>
       )}
@@ -140,9 +194,33 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
             <TableCell sx={{ width: 75 }} />
             <TableCell>Rank</TableCell>
             <TableCell colSpan={2}>Name</TableCell>
-            <TableCell>Total Estimated Gold</TableCell>
-            <TableCell>Current Gold</TableCell>
-            <TableCell>Daily Gold</TableCell>
+            <SortableHeader
+              onClick={() =>
+                setSelectedColumn(SORT_CATEGORIES.TOTAL_ESTIMATED_GOLD)
+              }
+            >
+              Total Estimated Gold
+            </SortableHeader>
+            <SortableHeader
+              onClick={() => setSelectedColumn(SORT_CATEGORIES.GOLD_LEFT)}
+            >
+              Estimated Gold Left
+            </SortableHeader>
+            <SortableHeader
+              onClick={() => setSelectedColumn(SORT_CATEGORIES.GOLD_DONATED)}
+            >
+              Currently Donated Gold
+            </SortableHeader>
+            <SortableHeader
+              onClick={() => setSelectedColumn(SORT_CATEGORIES.GOLD)}
+            >
+              Current Gold
+            </SortableHeader>
+            <SortableHeader
+              onClick={() => setSelectedColumn(SORT_CATEGORIES.DAILY_GOLD)}
+            >
+              Daily Gold
+            </SortableHeader>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -175,6 +253,12 @@ const CompetitorList: React.FC<CompetitorListProps> = ({
                 <TableCell>
                   {player.totalEstimatedGold?.toLocaleString()}
                 </TableCell>
+                <TableCell>
+                  {(
+                    player.totalEstimatedGold! - player.goldDonated
+                  ).toLocaleString()}
+                </TableCell>
+                <TableCell>{player.goldDonated.toLocaleString()}</TableCell>
                 <TableCell>{player.gold?.toLocaleString()}</TableCell>
                 <TableCell>{player.dailyGold?.toLocaleString()}</TableCell>
               </TableRow>
